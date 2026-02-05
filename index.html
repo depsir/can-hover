@@ -389,46 +389,46 @@
     // Method descriptions and explanations
     const methodInfo = {
       'CSS Media Query (hover: hover)': {
-        description: 'Utilizza la media query CSS @media (hover: hover) per rilevare se il dispositivo primario può fare hover sugli elementi.',
+        description: 'Lo standard ufficiale W3C per rilevare hover. Controlla se il dispositivo primario (pointer) può fare hover sugli elementi. Affidabile e moderno.',
         code: 'window.matchMedia("(hover: hover)").matches',
-        pros: 'Moderno, ufficiale, affidabile',
-        cons: 'Non supportato in browser molto vecchi'
+        pros: 'Standard W3C, moderno e affidabile, supportato nei browser moderni (Chrome 66+, Firefox 64+, Safari 13+)',
+        cons: 'Non supportato in browser vecchi (IE, versioni Safari <13)'
       },
       'CSS Media Query (pointer: fine)': {
-        description: 'Verifica se il pointer primario è "fine" (non touch) e supporta l\'hover.',
+        description: 'Verifica se il pointer primario è "fine" (mouse/trackpad) e supporta hover. Combina il tipo di pointer con il supporto hover.',
         code: 'window.matchMedia("(pointer: fine) and (hover: hover)").matches',
-        pros: 'Molto accurato, considera il tipo di pointer',
-        cons: 'Alcuni browser potrebbero non supportare pointer: fine'
+        pros: 'Molto specifico per input device, considera sia il tipo che la capacità di hover',
+        cons: 'Ridondante con "hover: hover" da solo; non supportato in browser vecchi'
       },
       'No touchstart event': {
-        description: 'Controlla se l\'evento touchstart non è disponibile nel device.',
+        description: 'Controlla l\'evento deprecato "ontouchstart". Questo metodo è meno affidabile perché alcuni device touch moderni potrebbero non implementarlo.',
         code: '!("ontouchstart" in window) && !navigator.msMaxTouchPoints',
-        pros: 'Semplice, ha buona compatibilità',
-        cons: 'Alcuni device touch potrebbero non avere l\'evento'
+        pros: 'Ha buona compatibilità storica con device vecchi',
+        cons: 'DEPRECATO: molti device moderni non lo implementano; false positives su tablet ibridi con trackpad'
       },
       'No maxTouchPoints': {
-        description: 'Verifica se navigator.maxTouchPoints è 0 o undefined, indicando nessun touch point.',
+        description: 'Controlla se il device ha zero touch points. Tuttavia, molti device ibridi hanno valori incoerenti (iPad Pro riporta 5 anche con trackpad).',
         code: '!navigator.maxTouchPoints || navigator.maxTouchPoints === 0',
-        pros: 'Standard moderno, affidabile',
-        cons: 'Potrebbe non essere disponibile in browser vecchi'
+        pros: 'Standard moderno, semplice da verificare',
+        cons: 'INAFFIDABILE: iPad Pro e device ibridi riportano valori incoerenti; non indica se supporta hover'
       },
       'Pointer not coarse': {
-        description: 'Controlla che il pointer primario non sia "coarse" (touchscreen), il che significa è fine (mouse/trackpad).',
+        description: 'Nega il rilevamento di pointer "coarse" (touchscreen). Logica inversa: se non è coarse, allora dovrebbe essere fine (mouse/trackpad).',
         code: '!window.matchMedia("(pointer: coarse)").matches',
-        pros: 'Specifico per il tipo di pointer',
-        cons: 'Richiede support per Pointer Events'
+        pros: 'Efficace nel rilevare se il device è touch-only',
+        cons: 'Logica inversa confusionaria; non controlla direttamente se supporta hover'
       },
       'CSS Media Query (any-hover)': {
-        description: 'Utilizza la media query CSS @media (any-hover: hover) per rilevare se QUALSIASI dispositivo di input (primario o secondario) può fare hover. Utile per device ibridi come iPad con trackpad esterno.',
+        description: 'Rileva se QUALSIASI dispositivo di input (primario O secondario, es: mouse + touch) può fare hover. Essenziale per device ibridi come iPad con trackpad esterno.',
         code: 'window.matchMedia("(any-hover: hover)").matches',
-        pros: 'Rileva input secondari, ottimo per device ibridi',
+        pros: 'NUOVO: rileva input secondari; ottimo per device ibridi; complementare a "hover: hover"',
         cons: 'Non supportato in browser molto vecchi'
       },
       'Combined heuristic': {
-        description: 'Combina i controlli di touchstart e maxTouchPoints per una maggiore affidabilità.',
-        code: 'Combinazione di touchstart + maxTouchPoints checks',
-        pros: 'Aumenta la confidenza del risultato',
-        cons: 'Potrebbe essere troppo conservativo'
+        description: 'Combina touchstart e maxTouchPoints. Logica: se ENTRAMBI indicano assenza di touch, allora supporta hover. Approccio conservativo.',
+        code: 'hasNoTouch && noTouchPoints',
+        pros: 'Aumenta confidenza richiedendo concordanza di più segnali',
+        cons: 'Falsi negativi su device ibridi (iPad con trackpad ha maxTouchPoints=5); combina metodi inaffidabili'
       }
     };
 
