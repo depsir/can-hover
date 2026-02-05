@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -297,7 +297,7 @@
   <div class="container">
     <header>
       <h1>🖱️ Can Hover?</h1>
-      <p class="subtitle">Controlla se il tuo dispositivo supporta l'hover</p>
+      <p class="subtitle">Check if your device supports hover <span style="font-size: 0.8em; opacity: 0.7;">(AI-Generated Content)</span></p>
     </header>
 
     <div class="main-result">
@@ -309,12 +309,12 @@
     </div>
 
     <section>
-      <h2>📊 Risultati dei Test</h2>
+      <h2>📊 Test Results</h2>
       <table>
         <thead>
           <tr>
-            <th>Metodo</th>
-            <th>Stato</th>
+            <th>Method</th>
+            <th>Status</th>
           </tr>
         </thead>
         <tbody id="resultsTable">
@@ -324,7 +324,7 @@
     </section>
 
     <section>
-      <h2>🔧 Come Funzionano i Metodi</h2>
+      <h2>🔧 How Methods Work</h2>
       <div class="methods-list" id="methodsList">
         <!-- Filled by JavaScript -->
       </div>
@@ -389,46 +389,46 @@
     // Method descriptions and explanations
     const methodInfo = {
       'CSS Media Query (hover: hover)': {
-        description: 'Lo standard ufficiale W3C per rilevare hover. Controlla se il dispositivo primario (pointer) può fare hover sugli elementi. Affidabile e moderno.',
+        description: 'The official W3C standard for detecting hover support. Checks if the primary input device (pointer) can hover over elements. Reliable and modern.',
         code: 'window.matchMedia("(hover: hover)").matches',
-        pros: 'Standard W3C, moderno e affidabile, supportato nei browser moderni (Chrome 66+, Firefox 64+, Safari 13+)',
-        cons: 'Non supportato in browser vecchi (IE, versioni Safari <13)'
+        pros: 'W3C standard, modern and reliable, supported in modern browsers (Chrome 66+, Firefox 64+, Safari 13+)',
+        cons: 'Not supported in old browsers (IE, Safari <13)'
       },
       'CSS Media Query (pointer: fine)': {
-        description: 'Verifica se il pointer primario è "fine" (mouse/trackpad) e supporta hover. Combina il tipo di pointer con il supporto hover.',
+        description: 'Checks if the primary pointer is "fine" (mouse/trackpad) and supports hover. Combines pointer type with hover capability.',
         code: 'window.matchMedia("(pointer: fine) and (hover: hover)").matches',
-        pros: 'Molto specifico per input device, considera sia il tipo che la capacità di hover',
-        cons: 'Ridondante con "hover: hover" da solo; non supportato in browser vecchi'
+        pros: 'Very specific for input device type, considers both type and hover capability',
+        cons: 'Redundant with "hover: hover" alone; not supported in old browsers'
       },
       'No touchstart event': {
-        description: 'Controlla l\'evento deprecato "ontouchstart". Questo metodo è meno affidabile perché alcuni device touch moderni potrebbero non implementarlo.',
+        description: 'Checks for the deprecated "ontouchstart" event. This method is unreliable because some modern touch devices may not implement it.',
         code: '!("ontouchstart" in window) && !navigator.msMaxTouchPoints',
-        pros: 'Ha buona compatibilità storica con device vecchi',
-        cons: 'DEPRECATO: molti device moderni non lo implementano; false positives su tablet ibridi con trackpad'
+        pros: 'Good historical compatibility with older devices',
+        cons: 'DEPRECATED: many modern devices don\'t implement it; false positives on hybrid tablets with trackpad'
       },
       'No maxTouchPoints': {
-        description: 'Controlla se il device ha zero touch points. Tuttavia, molti device ibridi hanno valori incoerenti (iPad Pro riporta 5 anche con trackpad).',
+        description: 'Checks if the device has zero touch points. However, many hybrid devices have inconsistent values (iPad Pro reports 5 even with trackpad).',
         code: '!navigator.maxTouchPoints || navigator.maxTouchPoints === 0',
-        pros: 'Standard moderno, semplice da verificare',
-        cons: 'INAFFIDABILE: iPad Pro e device ibridi riportano valori incoerenti; non indica se supporta hover'
+        pros: 'Modern standard, simple to check',
+        cons: 'UNRELIABLE: iPad Pro and hybrid devices report inconsistent values; doesn\'t indicate hover support'
       },
       'Pointer not coarse': {
-        description: 'Nega il rilevamento di pointer "coarse" (touchscreen). Logica inversa: se non è coarse, allora dovrebbe essere fine (mouse/trackpad).',
+        description: 'Negates detection of "coarse" pointer (touchscreen). Inverse logic: if not coarse, then it should be fine (mouse/trackpad).',
         code: '!window.matchMedia("(pointer: coarse)").matches',
-        pros: 'Efficace nel rilevare se il device è touch-only',
-        cons: 'Logica inversa confusionaria; non controlla direttamente se supporta hover'
+        pros: 'Effective at detecting if device is touch-only',
+        cons: 'Confusing inverse logic; doesn\'t directly check for hover support'
       },
       'CSS Media Query (any-hover)': {
-        description: 'Rileva se QUALSIASI dispositivo di input (primario O secondario, es: mouse + touch) può fare hover. Essenziale per device ibridi come iPad con trackpad esterno.',
+        description: 'Detects if ANY input device (primary OR secondary, e.g., mouse + touch) can hover. Essential for hybrid devices like iPad with external trackpad.',
         code: 'window.matchMedia("(any-hover: hover)").matches',
-        pros: 'NUOVO: rileva input secondari; ottimo per device ibridi; complementare a "hover: hover"',
-        cons: 'Non supportato in browser molto vecchi'
+        pros: 'NEW: detects secondary inputs; great for hybrid devices; complements "hover: hover"',
+        cons: 'Not supported in very old browsers'
       },
       'Combined heuristic': {
-        description: 'Combina touchstart e maxTouchPoints. Logica: se ENTRAMBI indicano assenza di touch, allora supporta hover. Approccio conservativo.',
+        description: 'Combines touchstart and maxTouchPoints checks. Logic: if BOTH indicate absence of touch, then it supports hover. Conservative approach.',
         code: 'hasNoTouch && noTouchPoints',
-        pros: 'Aumenta confidenza richiedendo concordanza di più segnali',
-        cons: 'Falsi negativi su device ibridi (iPad con trackpad ha maxTouchPoints=5); combina metodi inaffidabili'
+        pros: 'Increases confidence by requiring agreement from multiple signals',
+        cons: 'False negatives on hybrid devices (iPad with trackpad has maxTouchPoints=5); combines unreliable methods'
       }
     };
 
@@ -442,12 +442,12 @@
       
       if (consensus) {
         consensusBadge.className = 'consensus-badge supports';
-        consensusBadge.textContent = '✓ SUPPORTA HOVER';
-        consensusText.textContent = 'Il tuo dispositivo supporta l\'hover secondo la maggior parte dei metodi di rilevamento.';
+        consensusBadge.textContent = '✓ SUPPORTS HOVER';
+        consensusText.textContent = 'Your device supports hover according to most detection methods.';
       } else {
         consensusBadge.className = 'consensus-badge not-supports';
-        consensusBadge.textContent = '✗ NON SUPPORTA HOVER';
-        consensusText.textContent = 'Il tuo dispositivo non supporta l\'hover secondo la maggior parte dei metodi di rilevamento.';
+        consensusBadge.textContent = '✗ DOES NOT SUPPORT HOVER';
+        consensusText.textContent = 'Your device does not support hover according to most detection methods.';
       }
 
       // Device info
@@ -457,15 +457,15 @@
       deviceInfo.innerHTML = `
         <div class="device-info-row">
           <div class="device-info-item">
-            <div class="device-info-label">📐 Screen resolution</div>
+            <div class="device-info-label">📐 Screen Resolution</div>
             <div class="device-info-value">${info.screenResolution}</div>
           </div>
           <div class="device-info-item">
-            <div class="device-info-label">🔍 Viewport size</div>
+            <div class="device-info-label">🔍 Viewport Size</div>
             <div class="device-info-value">${info.viewportSize}</div>
           </div>
           <div class="device-info-item">
-            <div class="device-info-label">📊 Device pixel ratio</div>
+            <div class="device-info-label">📊 Device Pixel Ratio</div>
             <div class="device-info-value">${info.devicePixelRatio}x</div>
           </div>
           <div class="device-info-item device-info-useragent">
@@ -482,7 +482,7 @@
       Object.entries(results).forEach(([method, value]) => {
         const row = document.createElement('tr');
         const resultClass = value ? 'true' : 'false';
-        const resultText = value ? '✓ Supporta' : '✗ Non supporta';
+        const resultText = value ? '✓ Supports' : '✗ Does Not Support';
         
         row.innerHTML = `
           <td><strong>${method}</strong></td>
@@ -498,7 +498,7 @@
       Object.entries(methodInfo).forEach(([methodName, info]) => {
         const result = results[methodName];
         const resultClass = result ? 'true' : 'false';
-        const resultText = result ? '✓ Supporta' : '✗ Non supporta';
+        const resultText = result ? '✓ Supports' : '✗ Does Not Support';
         
         const methodDiv = document.createElement('div');
         methodDiv.className = 'method';
@@ -509,8 +509,8 @@
           </div>
           <p class="method-description">${info.description}</p>
           <div class="method-code">${info.code}</div>
-          <div class="method-pros"><span class="pros-label">✓ Pro:</span>${info.pros}</div>
-          <div class="method-cons"><span class="cons-label">✗ Contro:</span>${info.cons}</div>
+          <div class="method-pros"><span class="pros-label">✓ Pros:</span>${info.pros}</div>
+          <div class="method-cons"><span class="cons-label">✗ Cons:</span>${info.cons}</div>
         `;
         methodsList.appendChild(methodDiv);
       });
