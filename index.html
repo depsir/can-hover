@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Can Hover? - Hover Support Detection</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 1rem 1rem;
+      color: #333;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      color: white;
+      margin-bottom: 1rem;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 0.25rem;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      opacity: 0.95;
+    }
+
+    .main-result {
+      background: white;
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .consensus-badge {
+      display: inline-block;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+
+    .consensus-badge.supports {
+      background-color: #4ade80;
+      color: #166534;
+    }
+
+    .consensus-badge.not-supports {
+      background-color: #ef4444;
+      color: #fff;
+    }
+
+    .consensus-text {
+      font-size: 0.9rem;
+      color: #666;
+      margin-top: 0.15rem;
+    }
+
+    .device-info {
+      background: linear-gradient(135deg, #f5f7fa 0%, #e8eef5 100%);
+      border: 1px solid #d4dce6;
+      border-left: 4px solid #667eea;
+      padding: 0.75rem 0.75rem;
+      border-radius: 8px;
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+    }
+
+    .device-info-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .device-info-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .device-info-label {
+      font-weight: 600;
+      color: #667eea;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.15rem;
+    }
+
+    .device-info-value {
+      color: #333;
+      font-size: 0.8rem;
+    }
+
+    .device-info-useragent {
+      grid-column: 1 / -1;
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 0.75rem;
+      color: #555;
+      word-break: break-word;
+    }
+
+    .device-info-note {
+      font-size: 0.7rem;
+      color: #888;
+      font-style: italic;
+      margin-top: 0.35rem;
+      padding-top: 0.35rem;
+      border-top: 1px solid #d4dce6;
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 1.6rem;
+      }
+
+      section, .main-result {
+        padding: 0.85rem;
+      }
+    }
+
+    .device-info strong {
+      color: #667eea;
+    }
+
+    section {
+      background: white;
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      color: #667eea;
+      margin-bottom: 0.75rem;
+      font-size: 1.25rem;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 0.4rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 0;
+    }
+
+    th, td {
+      padding: 0.3rem 0.5rem;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+      font-size: 0.8rem;
+      white-space: nowrap;
+    }
+
+    th {
+      background-color: #f8f8f8;
+      font-weight: 600;
+      color: #667eea;
+    }
+
+    tr:hover {
+      background-color: #f9f9f9;
+    }
+
+    .result {
+      display: inline-block;
+      padding: 0.3rem 0.5rem;
+      border-radius: 4px;
+      font-weight: bold;
+      font-size: 0.8rem;
+    }
+
+    .result.true {
+      background-color: #dcfce7;
+      color: #166534;
+    }
+
+    .result.false {
+      background-color: #fee2e2;
+      color: #7f1d1d;
+    }
+
+    @media (max-width: 768px) {
+      .result {
+        width: 1.2rem;
+        overflow: hidden;
+        padding: 0.2rem 0.3rem;
+      }
+    }
+
+    .methods-list {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .method {
+      border: 1px solid #e5e5e5;
+      border-radius: 8px;
+      padding: 1.5rem;
+      background: #fafafa;
+    }
+
+    .method-title {
+      font-weight: bold;
+      color: #667eea;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .method-code {
+      font-family: 'Monaco', 'Courier New', monospace;
+      background: white;
+      padding: 0.75rem;
+      border-radius: 4px;
+      border-left: 3px solid #667eea;
+      margin: 0.75rem 0;
+      font-size: 0.85rem;
+      overflow-x: auto;
+      color: #333;
+    }
+
+    .method-description {
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 0.75rem;
+    }
+
+    .method-pros, .method-cons {
+      margin-top: 0.75rem;
+      font-size: 0.9rem;
+    }
+
+    .method-pros {
+      color: #16a34a;
+    }
+
+    .method-cons {
+      color: #dc2626;
+    }
+
+    .pros-label, .cons-label {
+      font-weight: bold;
+      margin-right: 0.5rem;
+    }
+
+    footer {
+      text-align: center;
+      color: white;
+      margin-top: 1.5rem;
+      opacity: 0.8;
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2rem;
+      }
+
+      section, .main-result {
+        padding: 1.5rem;
+      }
+
+      th, td {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+      }
+
+      .method {
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🖱️ Can Hover?</h1>
+      <p class="subtitle">Controlla se il tuo dispositivo supporta l'hover</p>
+    </header>
+
+    <div class="main-result">
+      <div class="consensus-badge" id="consensusBadge">
+        Caricamento...
+      </div>
+      <p class="consensus-text" id="consensusText"></p>
+      <div class="device-info" id="deviceInfo"></div>
+    </div>
+
+    <section>
+      <h2>📊 Risultati dei Test</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Metodo</th>
+            <th>Stato</th>
+          </tr>
+        </thead>
+        <tbody id="resultsTable">
+          <!-- Filled by JavaScript -->
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>🔧 Come Funzionano i Metodi</h2>
+      <div class="methods-list" id="methodsList">
+        <!-- Filled by JavaScript -->
+      </div>
+    </section>
+
+    <footer>
+      <p>Can Hover • Hover Detection Showcase • <a href="https://github.com/sac/can-hover" style="color: inherit; text-decoration: underline;">View on GitHub</a></p>
+    </footer>
+  </div>
+
+  <script src="lib/hover-detect.js"></script>
+  <script>
+    // Device detection utilities
+    const DeviceDetect = {
+      getDeviceType() {
+        const ua = navigator.userAgent.toLowerCase();
+        const isTablet = /ipad|android(?!.*mobi)|tablet|playbook|silk|(windows.*touch)/.test(ua);
+        const isMobile = /android|webos|iphone|ipod|blackberry|iemobile|opera mini/.test(ua);
+        
+        if (isTablet) return 'Tablet';
+        if (isMobile) return 'Mobile';
+        return 'Desktop';
+      },
+
+      getOS() {
+        const ua = navigator.userAgent;
+        let osName = 'Unknown';
+        
+        if (ua.indexOf('Win') > -1) osName = 'Windows';
+        else if (ua.indexOf('Mac') > -1) osName = ua.indexOf('iPhone') > -1 || ua.indexOf('iPad') > -1 ? 'iOS' : 'macOS';
+        else if (ua.indexOf('Linux') > -1) osName = 'Linux';
+        else if (ua.indexOf('Android') > -1) osName = 'Android';
+        else if (ua.indexOf('X11') > -1) osName = 'UNIX';
+        
+        return osName;
+      },
+
+      getScreenInfo() {
+        return {
+          screenResolution: `${window.screen.width}×${window.screen.height}px`,
+          viewportSize: `${window.innerWidth}×${window.innerHeight}px`,
+          devicePixelRatio: window.devicePixelRatio || 1,
+          isTouchCapable: 'ontouchstart' in window || navigator.maxTouchPoints > 0
+        };
+      },
+
+      getFullInfo() {
+        const screen = this.getScreenInfo();
+        return {
+          deviceType: this.getDeviceType(),
+          os: this.getOS(),
+          screenResolution: screen.screenResolution,
+          viewportSize: screen.viewportSize,
+          devicePixelRatio: screen.devicePixelRatio,
+          isTouchCapable: screen.isTouchCapable,
+          maxTouchPoints: navigator.maxTouchPoints || 0,
+          userAgent: navigator.userAgent
+        };
+      }
+    };
+
+    // Method descriptions and explanations
+    const methodInfo = {
+      'CSS Media Query (hover: hover)': {
+        description: 'Utilizza la media query CSS @media (hover: hover) per rilevare se il dispositivo primario può fare hover sugli elementi.',
+        code: 'window.matchMedia("(hover: hover)").matches',
+        pros: 'Moderno, ufficiale, affidabile',
+        cons: 'Non supportato in browser molto vecchi'
+      },
+      'CSS Media Query (pointer: fine)': {
+        description: 'Verifica se il pointer primario è "fine" (non touch) e supporta l\'hover.',
+        code: 'window.matchMedia("(pointer: fine) and (hover: hover)").matches',
+        pros: 'Molto accurato, considera il tipo di pointer',
+        cons: 'Alcuni browser potrebbero non supportare pointer: fine'
+      },
+      'No touchstart event': {
+        description: 'Controlla se l\'evento touchstart non è disponibile nel device.',
+        code: '!("ontouchstart" in window) && !navigator.msMaxTouchPoints',
+        pros: 'Semplice, ha buona compatibilità',
+        cons: 'Alcuni device touch potrebbero non avere l\'evento'
+      },
+      'No maxTouchPoints': {
+        description: 'Verifica se navigator.maxTouchPoints è 0 o undefined, indicando nessun touch point.',
+        code: '!navigator.maxTouchPoints || navigator.maxTouchPoints === 0',
+        pros: 'Standard moderno, affidabile',
+        cons: 'Potrebbe non essere disponibile in browser vecchi'
+      },
+      'Pointer not coarse': {
+        description: 'Controlla che il pointer primario non sia "coarse" (touchscreen), il che significa è fine (mouse/trackpad).',
+        code: '!window.matchMedia("(pointer: coarse)").matches',
+        pros: 'Specifico per il tipo di pointer',
+        cons: 'Richiede support per Pointer Events'
+      },
+      'Combined heuristic': {
+        description: 'Combina i controlli di touchstart e maxTouchPoints per una maggiore affidabilità.',
+        code: 'Combinazione di touchstart + maxTouchPoints checks',
+        pros: 'Aumenta la confidenza del risultato',
+        cons: 'Potrebbe essere troppo conservativo'
+      }
+    };
+
+    function displayResults() {
+      const results = HoverDetect.getAllResults();
+      const consensus = HoverDetect.getConsensus();
+      
+      // Update main result
+      const consensusBadge = document.getElementById('consensusBadge');
+      const consensusText = document.getElementById('consensusText');
+      
+      if (consensus) {
+        consensusBadge.className = 'consensus-badge supports';
+        consensusBadge.textContent = '✓ SUPPORTA HOVER';
+        consensusText.textContent = 'Il tuo dispositivo supporta l\'hover secondo la maggior parte dei metodi di rilevamento.';
+      } else {
+        consensusBadge.className = 'consensus-badge not-supports';
+        consensusBadge.textContent = '✗ NON SUPPORTA HOVER';
+        consensusText.textContent = 'Il tuo dispositivo non supporta l\'hover secondo la maggior parte dei metodi di rilevamento.';
+      }
+
+      // Device info
+      const deviceInfo = document.getElementById('deviceInfo');
+      const info = DeviceDetect.getFullInfo();
+      
+      deviceInfo.innerHTML = `
+        <div class="device-info-row">
+          <div class="device-info-item">
+            <div class="device-info-label">📐 Screen resolution</div>
+            <div class="device-info-value">${info.screenResolution}</div>
+          </div>
+          <div class="device-info-item">
+            <div class="device-info-label">🔍 Viewport size</div>
+            <div class="device-info-value">${info.viewportSize}</div>
+          </div>
+          <div class="device-info-item">
+            <div class="device-info-label">📊 Device pixel ratio</div>
+            <div class="device-info-value">${info.devicePixelRatio}x</div>
+          </div>
+          <div class="device-info-item device-info-useragent">
+            <div class="device-info-label">🌐 User Agent</div>
+            <div class="device-info-value">${info.userAgent}</div>
+          </div>
+        </div>
+      `;
+
+      // Update results table
+      const tbody = document.getElementById('resultsTable');
+      tbody.innerHTML = '';
+      
+      Object.entries(results).forEach(([method, value]) => {
+        const row = document.createElement('tr');
+        const resultClass = value ? 'true' : 'false';
+        const resultText = value ? '✓ Supporta' : '✗ Non supporta';
+        
+        row.innerHTML = `
+          <td><strong>${method}</strong></td>
+          <td><span class="result ${resultClass}">${resultText}</span></td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      // Update methods list
+      const methodsList = document.getElementById('methodsList');
+      methodsList.innerHTML = '';
+      
+      Object.entries(methodInfo).forEach(([methodName, info]) => {
+        const result = results[methodName];
+        const resultClass = result ? 'true' : 'false';
+        const resultText = result ? '✓ Supporta' : '✗ Non supporta';
+        
+        const methodDiv = document.createElement('div');
+        methodDiv.className = 'method';
+        methodDiv.innerHTML = `
+          <div class="method-title">
+            ${methodName}
+            <span class="result ${resultClass}" style="margin-left: auto;">${resultText}</span>
+          </div>
+          <p class="method-description">${info.description}</p>
+          <div class="method-code">${info.code}</div>
+          <div class="method-pros"><span class="pros-label">✓ Pro:</span>${info.pros}</div>
+          <div class="method-cons"><span class="cons-label">✗ Contro:</span>${info.cons}</div>
+        `;
+        methodsList.appendChild(methodDiv);
+      });
+    }
+
+    // Run on page load
+    window.addEventListener('load', displayResults);
+    
+    // Refresh results if window is resized (orientation change)
+    window.addEventListener('resize', displayResults);
+  </script>
+</body>
+</html>
