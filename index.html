@@ -418,6 +418,12 @@
         pros: 'Specifico per il tipo di pointer',
         cons: 'Richiede support per Pointer Events'
       },
+      'CSS Media Query (any-hover)': {
+        description: 'Utilizza la media query CSS @media (any-hover: hover) per rilevare se QUALSIASI dispositivo di input (primario o secondario) può fare hover. Utile per device ibridi come iPad con trackpad esterno.',
+        code: 'window.matchMedia("(any-hover: hover)").matches',
+        pros: 'Rileva input secondari, ottimo per device ibridi',
+        cons: 'Non supportato in browser molto vecchi'
+      },
       'Combined heuristic': {
         description: 'Combina i controlli di touchstart e maxTouchPoints per una maggiore affidabilità.',
         code: 'Combinazione di touchstart + maxTouchPoints checks',
